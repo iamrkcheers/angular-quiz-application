@@ -1,0 +1,198 @@
+<html>
+
+<head>
+    <title>Football Quiz</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../Css/custom.css">
+    <script src="../Libs/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+    <script src="../Model/factory.js"></script>
+    <script src="../Controller/controller.js"></script>
+    <script src="../Controller/quizctrl.js"></script>
+    <script src="../Controller/resultsctrl.js"></script>
+</head>
+
+<body ng-app="footballquiz">
+    <div class="container">
+        <div class="page-header text-center">
+            <h1>FOOTBALL QUIZ</h1>
+            <h3>Learn all about the who's who of football before jumping on to the <strong>FOOTBALL QUIZ !</strong></h3>
+        </div>
+        <div ng-controller="footballcontroller" ng-hide="qwerty.quizActive || qwerty.resultsActive">
+            <form class="form-inline well well-sm clearfix">
+                <span class="glyphicon glyphicon-search"></span>
+                <input type="text" placeholder="Search Here ..." class="form-control" ng-model="search">
+                <button class="btn btn-warning pull-right" ng-click="activateQuiz()">Start Quiz !</button>
+            </form>
+            <div class="row">
+                <div class="col-sm-6" ng-repeat="data in dataList|filter:search">
+                    <div class="well well-sm">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <img src="{{data.image}}" alt="" class="img-rounded img-responsive well-image">
+                            </div>
+                            <div class="col-md-5">
+                                <h4>{{data.name}}</h4>
+                                <p><strong>Team : </strong>{{data.team}}</p>
+                                <p><strong>Country : </strong>{{data.country}}</p>
+                                <p><strong>DOB : </strong>{{data.dob}}</p>
+                                <p><strong>Position : </strong>{{data.position}}</p>
+                                <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#football-info" ng-click="changeActivePlayer(data)">Learn More</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="football-info">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header text-center">
+                            <h2>{{activePlayer.name}}</h2>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-xs-8 col-xs-offset-2">
+                                    <img src="{{activePlayer.image}}" alt="" class="img-rounded img-responsive">
+                                </div>
+                            </div>
+                            <div class="row top-buffer">
+                                <div class="col-md-6">
+                                    <p><strong>Team : </strong>{{activePlayer.team}}</p>
+                                    <p><strong>Country : </strong>{{activePlayer.country}}</p>
+                                    <p><strong>DOB : </strong>{{activePlayer.dob}}</p>
+                                    <p><strong>Position : </strong>{{activePlayer.position}}</p>
+                                </div>
+                                <div class="col-xs-12 top-buffer">
+                                    <p>{{activePlayer.description}}</p>
+                                    <button class="btn btn-danger pull-right" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-controller="quizctrl" ng-show="qwerty.quizActive">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h4>Progress : </h4>
+                    <div class="btn-toolbar">
+                        <button class="btn" ng-repeat="question in quiz" ng-class="{'btn-info':question.selected!==null,'btn-danger':question.selected===null}" ng-click="setActiveQues($index)"><span class="glyphicon" ng-class="{'glyphicon-pencil':question.selected!==null,'glyphicon-exclamation-sign':question.selected===null}"></span></button>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <h4>Legend : </h4>
+                        <div class="col-sm-4">
+                            <button class=" btn btn-info"><span class="glyphicon glyphicon-pencil"></span></button>
+                            <p>Answered</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="btn btn-danger"><span class="glyphicon glyphicon-exclamation-sign"></span></button>
+                            <p>Unanswered</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="alert alert-danger" ng-show="error">Error ! You have'nt answered all of the questions ..
+                        <button class="close" ng-click="error=false">&times;</button>
+                    </div>
+                    <h4>Question : </h4>
+                </div>
+            </div>
+            <div class="well well-sm" ng-hide="finalise">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>{{activeQuestion+1+". "+questions[activeQuestion].text}}</h4>
+                        <div class="row" ng-if="questions[activeQuestion].type==='text'">
+                            <div class="col-sm-6" ng-repeat="option in questions[activeQuestion].options">
+                                <h4 class="answer" ng-class="{'bg-info':$index===questions[activeQuestion].selected}" ng-click="selectAnswer($index)">{{option.answer}}</h4></div>
+                        </div>
+                        <div class="row" ng-if="questions[activeQuestion].type==='image'">
+                            <div class="col-sm-6" ng-repeat="option in questions[activeQuestion].options">
+                                <div class="image-answer" ng-class="{'image-selected':$index===questions[activeQuestion].selected}" ng-click="selectAnswer($index)">
+                                    <img src="{{option.answer}}" alt="">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-danger" ng-click="quesAns()">Continue</button>
+            </div>
+            <div class="well well-sm" ng-show="finalise">
+                <div class="container">
+                    <div class="row">
+                        <div class="row-xs-12">
+                            <h3>Are you sure you want to submit your answers ?</h3>
+                            <button class="btn btn-success" ng-click="finaliseAns()">Yes</button>
+                            <button class="btn btn-danger" ng-click="finalise=false">No</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-controller="resultsctrl" ng-show="qwerty.resultsActive">
+            <div class="row">
+                <div class="col-xs-6">
+                    <h4>Results : </h4>
+                    <div class="btn-toolbar">
+                        <button class="btn" ng-repeat="question in quiz" ng-class="{'btn-success':question.correct,'btn-danger':!question.correct}" ng-click="setActiveQues($index)">
+                            <span class="glyphicon" ng-class="{'glyphicon-ok':question.correct,'glyphicon-remove':!question.correct}"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <h4>Legend : </h4>
+                        <div class="col-sm-4">
+                            <button class="btn btn-success"><span class="glyphicon glyphicon-ok"></span></button>
+                            <p>Correct</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></button>
+                            <p>Incorrect</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12 top-buffer">
+                    <h2>You scored {{qwerty.numCorrectAns}} / {{quiz.length}}</h2>
+                    <h2><strong>{{perc() | number:2}}%</strong></h2>
+                </div>
+            </div>
+            <div class="row">
+                <h3>Questions : </h3>
+                <div class="well well-sm">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <h4>{{activeQuestion+1+". "+questions[activeQuestion].text}}</h4>
+                            <div class="row" ng-if="questions[activeQuestion].type==='text'">
+                                <div class="col-sm-6" ng-repeat="option in questions[activeQuestion].options">
+                                    <h4 class="answer" ng-class="getAnsClass($index)">{{option.answer}}
+                                    <p class="pull-right" ng-show="$index!==qwerty.correctAns[activeQuestion] && $index===questions[activeQuestion].selected">Your Answer</p>
+                                    <p class="pull-right" ng-show="$index===qwerty.correctAns[activeQuestion]">Correct Answer</p>
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="row" ng-if="questions[activeQuestion].type==='image'">
+                                <div class="col-sm-6" ng-repeat="option in questions[activeQuestion].options">
+                                    <div class="image-answer" ng-class="getAnsClass($index)">
+                                        <img ng-src="{{option.answer}}" alt="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-lg" ng-click="reset()">Go back to facts</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

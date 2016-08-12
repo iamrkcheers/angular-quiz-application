@@ -1,0 +1,43 @@
+.well-image {
+    width: 100%;
+    height: 200px
+}
+
+.top-buffer {
+    margin-top: 30px
+}
+
+.answer {
+    padding: 15px 20px;
+    border: 1px solid black
+}
+
+.answer:hover {
+    cursor: pointer
+}
+
+.image-answer {
+    cursor: pointer;
+    height: 300px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    margin-bottom: 20px
+}
+
+.image-answer img {
+    width: 100%;
+    height: auto
+}
+
+.image-selected {
+    border: 3px solid #56afdc
+}
+
+.image-answer.bg-success {
+    border: 3px solid #5ea640
+}
+
+.image-answer.bg-danger {
+    border: 3px solid #b74848
+}
