@@ -12,11 +12,11 @@ app.controller("quizctrl", function ($scope, footballfactory) {
     $scope.finalise = false;
 
     $scope.setActiveQues = function (index) {
-        if (index === undefined) {
+        if (index === undefined) { // comes from 'answer has not been given, continue is clicked'
             var br = false;
             var quizLength = footballfactory.ques.length - 1;
             while (!br) { //next unanswered ques k liye
-                $scope.activeQuestion = $scope.activeQuestion < quizLength ? ++$scope.activeQuestion : 0;
+                $scope.activeQuestion = $scope.activeQuestion < quizLength ? ++$scope.activeQuestion : 0; // will either yield activeQuestion = [1,9] or activeQuestion = 0
                 if ($scope.activeQuestion === 0) {
                     $scope.error = true;
                 }
@@ -32,20 +32,24 @@ app.controller("quizctrl", function ($scope, footballfactory) {
     $scope.quesAns = function () {
         var queslength = footballfactory.ques.length;
         if ($scope.questions[$scope.activeQuestion].selected !== null) {
+            // answer has been given, continue is clicked
             numQuesAnswered++;
             if (numQuesAnswered >= queslength) {
+                // wd be '=' when continue is pressed 10 straight times; wd be '>' when continue is pressed & again the previous ques. is loaded from the btn-toolbar, and so-on and so-forth.
                 for (var i = 0; i < queslength; i++) { //numQuesAnswered >= queslength but all ques not answered
                     if ($scope.questions[i].selected === null) {
                         setActiveQues(i);
                         return;
                     }
                 }
+                // numQuesAnswered >= queslength but all ques answered
                 $scope.error = false;
                 $scope.finalise = true;
                 //alert($scope.finalise);
                 return;
             }
         }
+        // answer has not been given, continue is clicked
         $scope.setActiveQues();
     };
 

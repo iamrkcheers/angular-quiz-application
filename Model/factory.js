@@ -6,6 +6,7 @@ app.factory("footballfactory", function () {
         numCorrectAns: 0,
         ca: [],
 
+        // for displaying ( on / off ) quiz / results
         changeState: function (metric, state) {
             if (metric === "quiz") {
                 obj.quizActive = state;
@@ -16,6 +17,7 @@ app.factory("footballfactory", function () {
             }
         },
 
+        // for marking the quiz questions as to what one has chosen as his answer matches the 'correctAns' or not
         markQuiz: function () {
             obj.ca = obj.correctAns;
             for (var i = 0; i < obj.ques.length; i++) {
